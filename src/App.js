@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import handleLogic from 'handleLogic';
 
 function LiarsDice() {
   // 상태 관리
@@ -34,6 +35,9 @@ function LiarsDice() {
 
     // 턴 감소
     setTurnsLeft((prev) => (prev > 0 ? prev - 1 : 0));
+
+    // 제출 버튼 로직 필요
+    handleLogic();
 
     alert(`제출: 숫자 ${redNumber}, ${purpleNumber}개 이상`);
   };
