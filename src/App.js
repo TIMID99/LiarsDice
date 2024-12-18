@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
-import handleLogic from 'handleLogic';
+import handleLogic from './handleLogic';
+import Lobby from './Lobby';
+import LobbyForm from './LobbyForm';
 
 function LiarsDice() {
   // 상태 관리
@@ -8,6 +10,24 @@ function LiarsDice() {
   const [targetNumber, setTargetNumber] = useState(1); // 노란 숫자 (제출된 숫자)
   const [countNumber, setCountNumber] = useState(1); // 보라 숫자 (제출된 개수)
   const [turnsLeft, setTurnsLeft] = useState(3); // 남은 턴 수
+
+  // 로비 로직
+  const [lobbyId, setLobbyId] = useState(null);
+  const [isLeader, setIsLeader] = useState(false);
+  const createLobby = () => {
+    const newLobbyId = Math.floor(1000 + Math.random() * 9000); // 4 자리
+    setLobbyId(newLobbyId); 
+    setIsLeader(true); // 방장
+  };
+  const joinLobby = (id) => {
+    setLobbyId(id);
+    setIsLeader(false);
+  };
+
+
+  // 턴 타이머
+  const [turnPlayer, setTurnPlayer] = useState(1); // 현재 턴 플레이어
+  const [playValid, setplayValid] = useState(false); // 플레이 합법/불법
 
   // 빨간 숫자 변경 함수
   const changeRedNumber = (direction) => {
@@ -37,7 +57,11 @@ function LiarsDice() {
     setTurnsLeft((prev) => (prev > 0 ? prev - 1 : 0));
 
     // 제출 버튼 로직 필요
-    handleLogic();
+    while(!playValid){
+      handleLogic(turnPlayer, playValid);
+    }
+
+    setplayValid(false);
 
     alert(`제출: 숫자 ${redNumber}, ${purpleNumber}개 이상`);
   };
@@ -48,7 +72,16 @@ function LiarsDice() {
   };
 
   return (
+
     <div style={{ textAlign: 'center', padding: '20px', fontFamily: 'Arial' }}>
+      {/* 로비 기능 */}
+      <h1>Lobby System</h1>
+      {!lobbyId ? (
+        <LobbyForm createLobby={createLobby} joinLobby={joinLobby} />
+      ) : (
+        <Lobby lobbyId={lobbyId} />
+      )}
+      
       {/* 남은 턴 표시 */}
       <h2>본인 턴까지 {turnsLeft}턴 남았습니다</h2>
 
